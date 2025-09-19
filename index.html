@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết nối Node-RED</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .btn-yes {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-no {
+            background-color: #f44336;
+            color: white;
+        }
+        .log {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+        }
+        .error {
+            color: #d32f2f;
+        }
+        .success {
+            color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kết nối Node-RED</h1>
+    
+    <div class="buttons">
+        <button class="btn-yes" onclick="sendSignal('yes')">CÓ</button>
+        <button class="btn-no" onclick="sendSignal('no')">KHÔNG</button>
+    </div>
+    
+    <div class="log">
+        <h3>Nhật ký kết nối</h3>
+        <div id="logContainer">
+            <div class="log-entry">Hệ thống sẵn sàng</div>
+        </div>
+    </div>
+
+    <script>
+        function addToLog(message, type = '') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function sendSignal(signal) {
+            const nodeRedUrl = 'http://127.0.0.1:1880/choice';
+            
+            addToLog(`Gửi tín hiệu: ${signal} đến Node-RED`);
+            
+            fetch(nodeRedUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ signal: signal })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                addToLog(`Nhận phản hồi: ${JSON.stringify(data)}`, 'success');
+            })
+            .catch(error => {
+                addToLog(`Lỗi: ${error.message}`, 'error');
+            });
+        }
+
+        // Test kết nối khi trang load
+        addToLog('Trang đã tải. Sẵn sàng kết nối Node-RED');
+    </script>
+</body>
+</html>

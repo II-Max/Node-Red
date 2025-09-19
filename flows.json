@@ -1,0 +1,76 @@
+[
+    {
+        "id": "05cb4fae1f958a14",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "696b2476ad907357",
+        "type": "http in",
+        "z": "05cb4fae1f958a14",
+        "name": "Chung",
+        "url": "/choice",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 230,
+        "y": 120,
+        "wires": [
+            [
+                "bd2479e5866f7ab3"
+            ]
+        ]
+    },
+    {
+        "id": "bd2479e5866f7ab3",
+        "type": "function",
+        "z": "05cb4fae1f958a14",
+        "name": "function 1",
+        "func": "// CORS headers - THÊM ĐOẠN NÀY\nmsg.headers = msg.headers || {};\nmsg.headers['Access-Control-Allow-Origin'] = '*';\nmsg.headers['Access-Control-Allow-Methods'] = 'GET, PUT, PATCH, POST, DELETE, OPTIONS';\nmsg.headers['Access-Control-Allow-Headers'] = 'Content-Type';\n\n// Xử lý preflight OPTIONS request\nif (msg.req.method === 'OPTIONS') {\n    msg.statusCode = 200;\n    msg.payload = '';\n    return msg;\n}\n\n// Xử lý POST request\nconst response = {\n    status: 'success',\n    message: `Nhận tín hiệu DCMM: ${msg.payload.signal}`,\n    originalData: msg.payload,\n    receivedAt: new Date().toISOString()\n};\n\nmsg.payload = response;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 140,
+        "wires": [
+            [
+                "2f881522316ce3cd",
+                "9b8a22735dfa509a"
+            ]
+        ]
+    },
+    {
+        "id": "2f881522316ce3cd",
+        "type": "http response",
+        "z": "05cb4fae1f958a14",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 570,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "9b8a22735dfa509a",
+        "type": "debug",
+        "z": "05cb4fae1f958a14",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 160,
+        "wires": []
+    }
+]
